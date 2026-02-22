@@ -159,36 +159,28 @@ external int hid_get_report_descriptor(
   int bufLen,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
 external int hid_get_manufacturer_string(
   Pointer<hid_device> dev,
   Pointer<WChar> string,
   int maxlen,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
 external int hid_get_product_string(
   Pointer<hid_device> dev,
   Pointer<WChar> string,
   int maxlen,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
 external int hid_get_serial_number_string(
   Pointer<hid_device> dev,
   Pointer<WChar> string,
   int maxlen,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Int32, Pointer<WChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Int32, Pointer<WChar>, Size)>()
 external int hid_get_indexed_string(
   Pointer<hid_device> dev,
   int stringIndex,
