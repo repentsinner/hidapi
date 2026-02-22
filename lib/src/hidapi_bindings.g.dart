@@ -87,10 +87,7 @@ external int hid_init();
 external int hid_exit();
 
 @Native<Pointer<hid_device_info> Function(UnsignedShort, UnsignedShort)>()
-external Pointer<hid_device_info> hid_enumerate(
-  int vendorId,
-  int productId,
-);
+external Pointer<hid_device_info> hid_enumerate(int vendorId, int productId);
 
 @Native<Void Function(Pointer<hid_device_info>)>()
 external void hid_free_enumeration(Pointer<hid_device_info> devs);
@@ -110,9 +107,7 @@ external Pointer<hid_device> hid_open_path(Pointer<Char> path);
 @Native<Void Function(Pointer<hid_device>)>()
 external void hid_close(Pointer<hid_device> dev);
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
 external int hid_read(
   Pointer<hid_device> dev,
   Pointer<UnsignedChar> data,
@@ -129,27 +124,21 @@ external int hid_read_timeout(
   int milliseconds,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
 external int hid_write(
   Pointer<hid_device> dev,
   Pointer<UnsignedChar> data,
   int length,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
 external int hid_send_feature_report(
   Pointer<hid_device> dev,
   Pointer<UnsignedChar> data,
   int length,
 );
 
-@Native<
-  Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)
->()
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
 external int hid_get_feature_report(
   Pointer<hid_device> dev,
   Pointer<UnsignedChar> data,
@@ -163,9 +152,7 @@ external int hid_set_nonblocking(Pointer<hid_device> dev, int nonblock);
 external Pointer<WChar> hid_error(Pointer<hid_device> dev);
 
 @Native<Pointer<hid_device_info> Function(Pointer<hid_device>)>()
-external Pointer<hid_device_info> hid_get_device_info(
-  Pointer<hid_device> dev,
-);
+external Pointer<hid_device_info> hid_get_device_info(Pointer<hid_device> dev);
 
 @Native<Pointer<hid_api_version> Function()>()
 external Pointer<hid_api_version> hid_version();

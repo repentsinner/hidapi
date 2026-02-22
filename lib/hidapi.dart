@@ -242,10 +242,9 @@ HidDevice hidOpenPath(String path) {
     final dev = ffi.hid_open_path(pathPtr);
     if (dev == nullptr) {
       final errPtr = ffi.hid_error(nullptr);
-      final msg =
-          errPtr != nullptr && errPtr != nullptr
-              ? errPtr.cast<Utf16>().toDartString()
-              : 'Failed to open device';
+      final msg = errPtr != nullptr && errPtr != nullptr
+          ? errPtr.cast<Utf16>().toDartString()
+          : 'Failed to open device';
       throw HidException(msg);
     }
     return HidDevice._(dev);

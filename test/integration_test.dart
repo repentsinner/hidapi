@@ -22,14 +22,16 @@ void main() {
     final devices = hidEnumerate(vendorId: 0x10CE, productId: 0xEB93);
     print('Found ${devices.length} pendant collection(s):');
     for (final d in devices) {
-      print('  vid=0x${d.vendorId.toRadixString(16)} '
-          'pid=0x${d.productId.toRadixString(16)} '
-          'usagePage=0x${d.usagePage.toRadixString(16)} '
-          'usage=0x${d.usage.toRadixString(16)} '
-          'iface=${d.interfaceNumber} '
-          'mfr="${d.manufacturer}" '
-          'product="${d.product}" '
-          'path="${d.path}"');
+      print(
+        '  vid=0x${d.vendorId.toRadixString(16)} '
+        'pid=0x${d.productId.toRadixString(16)} '
+        'usagePage=0x${d.usagePage.toRadixString(16)} '
+        'usage=0x${d.usage.toRadixString(16)} '
+        'iface=${d.interfaceNumber} '
+        'mfr="${d.manufacturer}" '
+        'product="${d.product}" '
+        'path="${d.path}"',
+      );
     }
     // Pendant has 2 HID collections.
     expect(devices.length, equals(2));

@@ -22,12 +22,8 @@ void main(List<String> args) async {
         if (targetOS == OS.macOS) 'CoreFoundation',
         if (targetOS == OS.macOS) 'AppKit',
       ],
-      libraries: [
-        if (targetOS == OS.linux) 'udev',
-      ],
-      defines: {
-        if (targetOS == OS.windows) 'HID_API_NO_EXPORT_DEFINE': null,
-      },
+      libraries: [if (targetOS == OS.linux) 'udev'],
+      defines: {},
     );
 
     await builder.run(input: input, output: output);
