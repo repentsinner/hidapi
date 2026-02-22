@@ -7,6 +7,16 @@ Compiles hidapi 0.15.0 from source at build time via
 [Dart build hooks](https://dart.dev/interop/c-interop). No system-level
 hidapi installation required.
 
+## Why this package?
+
+- **Pure Dart.** No Flutter dependency. Works in CLI tools, servers, and
+  any Dart application.
+- **Modern build.** Uses Dart 3.10 native build hooks to compile hidapi
+  from vendored source. No manual toolchain setup beyond a C compiler.
+- **Complete API.** Wraps every public hidapi function — enumerate, open,
+  read/write, feature and input reports, report descriptors, string
+  queries, device info, and version introspection.
+
 ## Platform support
 
 | Platform | Backend          |
