@@ -76,7 +76,7 @@ class HidDeviceInfo {
 
 /// Handle to an open HID device.
 ///
-/// Obtain via [hidOpenPath]. Must be [close]d when done.
+/// Obtain via [hidOpen] or [hidOpenPath]. Must be [close]d when done.
 class HidDevice {
   HidDevice._(this._ptr);
 
@@ -174,6 +174,99 @@ class HidDevice {
     if (result < 0) throw HidException(_getDeviceError());
   }
 
+  /// Get an input report. Sets [reportId] as the first byte of the buffer.
+  ///
+  /// Returns the report data (including report ID as first byte).
+  /// Throws [HidException] on error.
+  Uint8List getInputReport(int reportId, int maxLength) {
+    _ensureOpen();
+    final buf = calloc<UnsignedChar>(maxLength);
+    try {
+      buf[0] = reportId;
+      final result = ffi.hid_get_input_report(_ptr, buf, maxLength);
+      if (result < 0) throw HidException(_getDeviceError());
+      return Uint8List.fromList(buf.cast<Uint8>().asTypedList(result));
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
+  /// Get the HID report descriptor.
+  ///
+  /// Returns up to [maxLength] bytes of the raw report descriptor.
+  /// Throws [HidException] on error.
+  Uint8List getReportDescriptor(int maxLength) {
+    _ensureOpen();
+    final buf = calloc<UnsignedChar>(maxLength);
+    try {
+      final result = ffi.hid_get_report_descriptor(_ptr, buf, maxLength);
+      if (result < 0) throw HidException(_getDeviceError());
+      return Uint8List.fromList(buf.cast<Uint8>().asTypedList(result));
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
+  /// Get the manufacturer string.
+  ///
+  /// Throws [HidException] on error.
+  String getManufacturerString() {
+    _ensureOpen();
+    final buf = calloc<WChar>(256);
+    try {
+      final result = ffi.hid_get_manufacturer_string(_ptr, buf, 256);
+      if (result < 0) throw HidException(_getDeviceError());
+      return _wcharToString(buf);
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
+  /// Get the product string.
+  ///
+  /// Throws [HidException] on error.
+  String getProductString() {
+    _ensureOpen();
+    final buf = calloc<WChar>(256);
+    try {
+      final result = ffi.hid_get_product_string(_ptr, buf, 256);
+      if (result < 0) throw HidException(_getDeviceError());
+      return _wcharToString(buf);
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
+  /// Get the serial number string.
+  ///
+  /// Throws [HidException] on error.
+  String getSerialNumberString() {
+    _ensureOpen();
+    final buf = calloc<WChar>(256);
+    try {
+      final result = ffi.hid_get_serial_number_string(_ptr, buf, 256);
+      if (result < 0) throw HidException(_getDeviceError());
+      return _wcharToString(buf);
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
+  /// Get an indexed string.
+  ///
+  /// Throws [HidException] on error.
+  String getIndexedString(int index) {
+    _ensureOpen();
+    final buf = calloc<WChar>(256);
+    try {
+      final result = ffi.hid_get_indexed_string(_ptr, index, buf, 256);
+      if (result < 0) throw HidException(_getDeviceError());
+      return _wcharToString(buf);
+    } finally {
+      calloc.free(buf);
+    }
+  }
+
   /// Get device info for this open device.
   HidDeviceInfo? getDeviceInfo() {
     _ensureOpen();
@@ -229,6 +322,46 @@ List<HidDeviceInfo> hidEnumerate({int vendorId = 0, int productId = 0}) {
     return results;
   } finally {
     ffi.hid_free_enumeration(head);
+  }
+}
+
+/// Open a HID device by vendor/product ID.
+///
+/// Optionally filter by [serialNumber]. Throws [HidException] on failure.
+HidDevice hidOpen(int vendorId, int productId, {String? serialNumber}) {
+  Pointer<WChar> serialPtr = nullptr;
+  try {
+    if (serialNumber != null) {
+      // Encode as platform wchar_t (UTF-16 on Windows, UTF-32 on POSIX).
+      if (sizeOf<WChar>() == 2) {
+        final units = serialNumber.codeUnits;
+        serialPtr = calloc<WChar>(units.length + 1);
+        final p = serialPtr.cast<Uint16>();
+        for (var i = 0; i < units.length; i++) {
+          p[i] = units[i];
+        }
+        p[units.length] = 0;
+      } else {
+        final runes = serialNumber.runes.toList();
+        serialPtr = calloc<WChar>(runes.length + 1);
+        final p = serialPtr.cast<Uint32>();
+        for (var i = 0; i < runes.length; i++) {
+          p[i] = runes[i];
+        }
+        p[runes.length] = 0;
+      }
+    }
+    final dev = ffi.hid_open(vendorId, productId, serialPtr);
+    if (dev == nullptr) {
+      final errPtr = ffi.hid_error(nullptr);
+      final msg = errPtr != nullptr
+          ? errPtr.cast<Utf16>().toDartString()
+          : 'Failed to open device';
+      throw HidException(msg);
+    }
+    return HidDevice._(dev);
+  } finally {
+    if (serialPtr != nullptr) calloc.free(serialPtr);
   }
 }
 

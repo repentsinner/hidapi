@@ -145,6 +145,49 @@ external int hid_get_feature_report(
   int length,
 );
 
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
+external int hid_get_input_report(
+  Pointer<hid_device> dev,
+  Pointer<UnsignedChar> data,
+  int length,
+);
+
+@Native<Int32 Function(Pointer<hid_device>, Pointer<UnsignedChar>, Size)>()
+external int hid_get_report_descriptor(
+  Pointer<hid_device> dev,
+  Pointer<UnsignedChar> buf,
+  int bufLen,
+);
+
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
+external int hid_get_manufacturer_string(
+  Pointer<hid_device> dev,
+  Pointer<WChar> string,
+  int maxlen,
+);
+
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
+external int hid_get_product_string(
+  Pointer<hid_device> dev,
+  Pointer<WChar> string,
+  int maxlen,
+);
+
+@Native<Int32 Function(Pointer<hid_device>, Pointer<WChar>, Size)>()
+external int hid_get_serial_number_string(
+  Pointer<hid_device> dev,
+  Pointer<WChar> string,
+  int maxlen,
+);
+
+@Native<Int32 Function(Pointer<hid_device>, Int32, Pointer<WChar>, Size)>()
+external int hid_get_indexed_string(
+  Pointer<hid_device> dev,
+  int stringIndex,
+  Pointer<WChar> string,
+  int maxlen,
+);
+
 @Native<Int32 Function(Pointer<hid_device>, Int32)>()
 external int hid_set_nonblocking(Pointer<hid_device> dev, int nonblock);
 

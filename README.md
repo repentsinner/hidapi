@@ -67,6 +67,7 @@ void main() {
 | `hidInit()` | Initialize hidapi. Auto-called by `hidEnumerate`/`hidOpenPath` if needed. |
 | `hidExit()` | Free hidapi resources. |
 | `hidEnumerate({vendorId, productId})` | List connected HID devices. Pass 0 to match all. |
+| `hidOpen(vendorId, productId, {serialNumber})` | Open a device by VID/PID. Returns `HidDevice`. |
 | `hidOpenPath(path)` | Open a device by its platform path. Returns `HidDevice`. |
 | `hidVersion()` | hidapi version as `({int major, int minor, int patch})`. |
 | `hidVersionStr()` | hidapi version as `String`. |
@@ -79,6 +80,12 @@ void main() {
 | `write(data)` | Write bytes. First byte = report ID (0x00 for single-report devices). |
 | `sendFeatureReport(data)` | Send a feature report. |
 | `getFeatureReport(reportId, maxLength)` | Get a feature report. |
+| `getInputReport(reportId, maxLength)` | Get an input report. |
+| `getReportDescriptor(maxLength)` | Get the raw HID report descriptor. |
+| `getManufacturerString()` | Get the manufacturer string. |
+| `getProductString()` | Get the product string. |
+| `getSerialNumberString()` | Get the serial number string. |
+| `getIndexedString(index)` | Get a string by USB string index. |
 | `setNonBlocking(bool)` | Toggle blocking/non-blocking reads. |
 | `getDeviceInfo()` | Metadata for the open device. |
 | `close()` | Release the device handle. |
