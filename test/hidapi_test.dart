@@ -77,5 +77,14 @@ void main() {
         hidExit();
       }
     });
+
+    test('hidOpen throws HidException for invalid VID/PID', () {
+      hidInit();
+      try {
+        expect(() => hidOpen(0, 0), throwsA(isA<HidException>()));
+      } finally {
+        hidExit();
+      }
+    });
   });
 }
