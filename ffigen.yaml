@@ -1,9 +1,12 @@
 name: HidapiBindings
 description: FFI bindings for hidapi
 output: lib/src/hidapi_bindings.g.dart
+# NOTE: ffigen requires a prior `dart run` to populate the build cache.
+# The header lives under .dart_tool/ after the build hook downloads hidapi.
+# To regenerate bindings, first run `dart run` then use the path below.
 headers:
   entry-points:
-    - src/hidapi/hidapi/hidapi.h
+    - .dart_tool/native_assets_builder/**/hidapi-hidapi-0.15.0/hidapi/hidapi.h
 compiler-opts:
   - -DHID_API_NO_EXPORT_DEFINE
 preamble: |
