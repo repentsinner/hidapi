@@ -22,6 +22,8 @@ consuming packages.
 
 ## 1. API surface
 
+*Status: complete — PR #1, #4, 2026-02-22*
+
 The package shall expose an idiomatic Dart API that maps 1:1 to every
 public function, struct, and enum in upstream `hidapi/hidapi.h`.
 
@@ -43,6 +45,8 @@ Deviations from the C API:
 
 ## 2. Platform support
 
+*Status: complete — PR #1, 2026-02-22*
+
 The package shall support every platform supported by upstream hidapi.
 The build hook shall select the correct backend source file, frameworks,
 and link libraries as defined by the upstream build system.
@@ -50,6 +54,8 @@ and link libraries as defined by the upstream build system.
 ---
 
 ## 3. Native source acquisition
+
+*Status: complete — PR #2, 2026-02-22*
 
 Git submodules are not viable: `dart pub get` does not recursively init
 submodules, so consumers that depend on this package via pub.dev or a git
@@ -70,6 +76,8 @@ Instead, the package acquires native source via a Dart 3.10 build hook
 
 ## 4. Testing
 
+*Status: complete — PR #1, #7, 2026-02-22*
+
 HID devices require physical hardware. CI runners have none, so the test
 strategy splits into two tiers:
 
@@ -82,6 +90,8 @@ strategy splits into two tiers:
 ---
 
 ## 5. CI/CD
+
+*Status: complete — PR #1, #5, #7, #8, #9, #11, 2026-02-22*
 
 This is a single-maintainer project. Releases should not require manual
 steps beyond merging a PR. pub.dev requires semver; conventional commits
@@ -100,6 +110,8 @@ let release-please derive the correct version bump automatically.
 ---
 
 ## 6. Publishing
+
+*Status: not started*
 
 Downstream projects should be able to depend on this package with
 `dart pub add hidapi` rather than git dependencies or local paths.
