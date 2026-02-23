@@ -33,7 +33,7 @@ hidapi installation required.
 
 ## Install
 
-```
+```sh
 dart pub add hidapi
 ```
 
@@ -70,58 +70,31 @@ void main() {
 
 ## API
 
-### Top-level functions
+Top-level functions: `hidInit`, `hidExit`, `hidEnumerate`, `hidOpen`,
+`hidOpenPath`, `hidVersion`, `hidVersionStr`.
 
-| Function | Description |
-|----------|-------------|
-| `hidInit()` | Initialize hidapi. Auto-called by `hidEnumerate`/`hidOpenPath` if needed. |
-| `hidExit()` | Free hidapi resources. |
-| `hidEnumerate({vendorId, productId})` | List connected HID devices. Pass 0 to match all. |
-| `hidOpen(vendorId, productId, {serialNumber})` | Open a device by VID/PID. Returns `HidDevice`. |
-| `hidOpenPath(path)` | Open a device by its platform path. Returns `HidDevice`. |
-| `hidVersion()` | hidapi version as `({int major, int minor, int patch})`. |
-| `hidVersionStr()` | hidapi version as `String`. |
+`HidDevice` wraps an open device handle with methods for read/write,
+feature and input reports, report descriptors, string queries, and
+non-blocking mode.
 
-### HidDevice
-
-| Method | Description |
-|--------|-------------|
-| `read(maxLength, {timeout})` | Read up to N bytes. Returns `Uint8List`. |
-| `write(data)` | Write bytes. First byte = report ID (0x00 for single-report devices). |
-| `sendFeatureReport(data)` | Send a feature report. |
-| `getFeatureReport(reportId, maxLength)` | Get a feature report. |
-| `getInputReport(reportId, maxLength)` | Get an input report. |
-| `getReportDescriptor(maxLength)` | Get the raw HID report descriptor. |
-| `getManufacturerString()` | Get the manufacturer string. |
-| `getProductString()` | Get the product string. |
-| `getSerialNumberString()` | Get the serial number string. |
-| `getIndexedString(index)` | Get a string by USB string index. |
-| `setNonBlocking(bool)` | Toggle blocking/non-blocking reads. |
-| `getDeviceInfo()` | Metadata for the open device. |
-| `close()` | Release the device handle. |
-
-### HidDeviceInfo
-
-Returned by `hidEnumerate()` and `HidDevice.getDeviceInfo()`. Fields:
-`path`, `vendorId`, `productId`, `serialNumber`, `releaseNumber`,
-`manufacturer`, `product`, `usagePage`, `usage`, `interfaceNumber`,
-`busType`.
-
-### HidBusType
-
-Enum: `unknown`, `usb`, `bluetooth`, `i2c`, `spi`.
+See the [API reference](https://pub.dev/documentation/hidapi/latest/)
+for full details.
 
 ## How the build works
 
-The Dart build hook (`hook/build.dart`) downloads a pinned, SHA-256-verified
-tarball of hidapi 0.15.0 on first build. Subsequent builds use the cached
-source. The C code compiles via `native_toolchain_c` — no manual steps.
+The Dart build hook downloads a pinned, SHA-256-verified hidapi tarball
+on first build and caches it. No manual steps beyond a C toolchain.
 
 ## Upstream
 
-- hidapi: [libusb/hidapi](https://github.com/libusb/hidapi)
-- Maintainer: originally [signal11](https://github.com/signal11/hidapi),
-  now under [libusb](https://github.com/libusb) org
+[libusb/hidapi](https://github.com/libusb/hidapi) — originally
+[signal11/hidapi](https://github.com/signal11/hidapi), now maintained
+under the [libusb](https://github.com/libusb) org.
+
+## Issues and contributions
+
+File bugs and feature requests on the
+[issue tracker](https://github.com/repentsinner/hidapi/issues).
 
 ## License
 
