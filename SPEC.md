@@ -1,18 +1,109 @@
-# Spec: Native source acquisition
+# Spec: hidapi Dart bindings
 
 ## Problem
 
-`dart pub get` does not recursively init git submodules. Consumer projects
-that depend on this package via pub.dev or git cannot compile the native
-library — the C source is missing at build time.
+No Dart package provides complete, cross-platform access to USB and
+Bluetooth HID devices. Developers resort to platform channels (Flutter
+only) or incomplete FFI wrappers that require prebuilt binaries or
+system-installed libraries.
 
-## Requirements
+## Scope
 
-- When a consumer project depends on this package, `dart pub get` followed
-  by `dart run` shall compile the native library without git submodules or
-  pre-existing C source in the repository.
-- The build hook shall acquire pinned, hash-verified C source automatically
-  on first build.
+This package wraps the upstream [hidapi](https://github.com/libusb/hidapi)
+C library. It shall expose every public function, struct, and enum from
+`hidapi/hidapi.h`. Platform support shall match upstream: Windows, macOS,
+and Linux. The package shall track upstream releases, adopting new versions
+within a reasonable timeframe of their release. The wrapper shall remain
+thin — no polling loops, isolate wrappers, or stream abstractions.
+Application-level concurrency patterns vary by use case and belong in
+consuming packages.
+
+---
+
+## 1. API surface
+
+The package shall expose an idiomatic Dart API that maps 1:1 to every
+public function, struct, and enum in upstream `hidapi/hidapi.h`.
+
+Deviations from the C API:
+
+- Errors throw `HidException` (wrapping `hid_error()`) instead of
+  returning sentinel values.
+- `hidEnumerate` returns `List<HidDeviceInfo>` instead of a linked list.
+  The list shall be empty (not null) when no devices match.
+- `HidDevice.close()` shall be idempotent.
+- `hidInit()` shall be called automatically by `hidEnumerate`, `hidOpen`,
+  and `hidOpenPath` if not already initialized.
+- String conversions shall handle platform `wchar_t` differences: UTF-16
+  on Windows, UTF-32 on POSIX.
+- `HidDevice.read` accepts an optional `Duration? timeout` parameter,
+  dispatching to `hid_read` or `hid_read_timeout` accordingly.
+
+---
+
+## 2. Platform support
+
+The package shall support every platform supported by upstream hidapi.
+The build hook shall select the correct backend source file, frameworks,
+and link libraries as defined by the upstream build system.
+
+---
+
+## 3. Native source acquisition
+
+Git submodules are not viable: `dart pub get` does not recursively init
+submodules, so consumers that depend on this package via pub.dev or a git
+dependency would be missing the C source at build time.
+
+Instead, the package acquires native source via a Dart 3.10 build hook
+(`hook/build.dart`):
+
+- The build hook shall download a pinned, SHA-256-verified tarball of
+  upstream hidapi source on first build.
+- The build hook shall delete the tarball and abort if the SHA-256 digest
+  does not match the expected value.
 - Subsequent builds shall reuse cached source without network access.
-- The native library shall compile on Windows, macOS, and Linux from the
-  acquired source.
+- `dart pub get` followed by `dart run` shall compile the native library
+  with no manual steps beyond a C toolchain.
+
+---
+
+## 4. Testing
+
+HID devices require physical hardware. CI runners have none, so the test
+strategy splits into two tiers:
+
+- Unit tests shall verify FFI struct layouts, native symbol resolution,
+  and all wrapper functions that do not require hardware. Error paths
+  (invalid device path, invalid VID/PID) shall be tested.
+- Integration tests requiring physical HID hardware shall be tagged
+  `hardware` and skipped by default. Developers run these locally.
+
+---
+
+## 5. CI/CD
+
+This is a single-maintainer project. Releases should not require manual
+steps beyond merging a PR. pub.dev requires semver; conventional commits
+let release-please derive the correct version bump automatically.
+
+- On every push to `main` and every pull request targeting `main`, CI
+  shall run static analysis (`dart analyze --fatal-infos`), format
+  checking (`dart format --set-exit-if-changed`), and tests (`dart test`).
+- Commits shall follow conventional commit format so release-please can
+  map them to semver bumps (`feat` → minor, `fix` → patch,
+  `BREAKING CHANGE` → major).
+- release-please shall create version-bump PRs from those commits.
+- Release PRs with the `autorelease: pending` label shall auto-merge
+  after CI passes.
+
+---
+
+## 6. Publishing
+
+Downstream projects should be able to depend on this package with
+`dart pub add hidapi` rather than git dependencies or local paths.
+
+- The package shall be published to pub.dev.
+- Publishing is manual for now. Automated publishing may follow once the
+  API stabilizes.
