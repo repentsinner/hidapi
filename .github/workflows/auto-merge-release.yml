@@ -6,7 +6,7 @@ on:
 
 jobs:
   auto-merge:
-    if: github.actor == 'github-actions[bot]' && contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
+    if: contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
     runs-on: ubuntu-latest
     permissions:
       contents: write
