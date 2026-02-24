@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.2...hidapi-v0.1.3) (2026-02-24)
+
+
+### Bug Fixes
+
+* **ci:** use PAT for auto-merge to trigger downstream workflows ([#20](https://github.com/repentsinner/hidapi/issues/20)) ([72f0009](https://github.com/repentsinner/hidapi/commit/72f00094b819c821a85ac334b893d70b9f9b2514))
+
 ## [0.1.2](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.1...hidapi-v0.1.2) (2026-02-24)
 
 
