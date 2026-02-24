@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.2](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.1...hidapi-v0.1.2) (2026-02-24)
+
+
+### Bug Fixes
+
+* **ci:** quote if-expression in auto-merge workflow ([1142aa4](https://github.com/repentsinner/hidapi/commit/1142aa4892b9cfee027cd9d6907c6fa906a7f2fb))
+* **ci:** quote if-expression in auto-merge workflow ([febbb66](https://github.com/repentsinner/hidapi/commit/febbb665ebf89fcc66905ecefb5018faf130a767))
+* **ci:** remove actor check from auto-merge workflow ([cc88bfd](https://github.com/repentsinner/hidapi/commit/cc88bfdf4b82cb4e0215a5f726bcae388729afe2))
+* **ci:** remove actor check from auto-merge workflow ([b36d72d](https://github.com/repentsinner/hidapi/commit/b36d72d61eb53ee29a842bb65ce8a9a5f4c9d603))
+* **ci:** use pull_request_target for auto-merge workflow ([2a6aa0b](https://github.com/repentsinner/hidapi/commit/2a6aa0ba7d22dc5128a91746c026eff60381b2f9))
+* **ci:** use pull_request_target for auto-merge workflow ([24f7d53](https://github.com/repentsinner/hidapi/commit/24f7d533bee1b461edc0b68f74dc4efa3669d425))
+* **example:** rename to example.dart for pub.dev discovery ([ff4d1f5](https://github.com/repentsinner/hidapi/commit/ff4d1f5150c4c3ad05191cd642094e8109f27f8d))
+* **example:** rename to example.dart for pub.dev discovery ([d77e3dd](https://github.com/repentsinner/hidapi/commit/d77e3ddafd92d5a346a57e1cdd930892ec8e064a))
+
 ## [0.1.1](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.0...hidapi-v0.1.1) (2026-02-22)
 
 
