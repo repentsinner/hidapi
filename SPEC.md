@@ -109,7 +109,36 @@ let release-please derive the correct version bump automatically.
 
 ---
 
-## 6. Publishing
+## 6. macOS exclusive device access
+
+*Status: in progress*
+
+On macOS, hidapi defaults to opening devices in exclusive mode
+(`kIOHIDOptionsTypeSeizeDevice`). This is set by `hid_init()` calling
+`hid_darwin_set_open_exclusive(1)` for backward compatibility.
+
+Exclusive mode prevents a second `hid_open_path` call on the same device
+path within the same process — the `IOHIDDeviceOpen` call fails. This
+breaks applications that open separate read and write handles from
+different Dart isolates (isolates share process memory, so the C-level
+`device_open_options` global is visible to all threads).
+
+The package shall expose the macOS-specific exclusive mode control:
+
+- `hidDarwinSetOpenExclusive(bool exclusive)` — sets the global open mode.
+  No-op on Linux and Windows where the symbol does not exist.
+- `hidDarwinGetOpenExclusive()` — returns the current setting.
+  Returns `false` on non-macOS platforms.
+
+The FFI bindings file shall include `hid_darwin_set_open_exclusive` and
+`hid_darwin_get_open_exclusive`. The Dart wrappers shall guard calls with
+a platform check (attempt the native call; catch the symbol-not-found
+error on non-macOS) so that consuming code does not need conditional
+imports.
+
+---
+
+## 7. Publishing
 
 *Status: not started*
 

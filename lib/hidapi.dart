@@ -398,6 +398,32 @@ String hidVersionStr() {
   return ptr.cast<Utf8>().toDartString();
 }
 
+/// Set the macOS exclusive device open mode.
+///
+/// When `true`, subsequent [hidOpen] and [hidOpenPath] calls seize the device
+/// exclusively (`kIOHIDOptionsTypeSeizeDevice`). Defaults to `true` after
+/// [hidInit].
+///
+/// No-op on Linux and Windows where the symbol does not exist.
+void hidDarwinSetOpenExclusive(bool exclusive) {
+  try {
+    ffi.hid_darwin_set_open_exclusive(exclusive ? 1 : 0);
+  } on ArgumentError {
+    // Symbol not available on this platform.
+  }
+}
+
+/// Get the current macOS exclusive device open mode.
+///
+/// Returns `false` on non-macOS platforms where the symbol does not exist.
+bool hidDarwinGetOpenExclusive() {
+  try {
+    return ffi.hid_darwin_get_open_exclusive() != 0;
+  } on ArgumentError {
+    return false;
+  }
+}
+
 // --- Internal helpers ---
 
 HidDeviceInfo _deviceInfoFromNative(ffi.hid_device_info info) {

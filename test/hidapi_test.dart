@@ -87,4 +87,47 @@ void main() {
       }
     });
   });
+
+  group('darwin exclusive mode', () {
+    test('hidDarwinGetOpenExclusive returns bool', () {
+      hidInit();
+      try {
+        final val = hidDarwinGetOpenExclusive();
+        expect(val, isA<bool>());
+      } finally {
+        hidExit();
+      }
+    });
+
+    test('hidDarwinSetOpenExclusive accepts bool without throwing', () {
+      hidInit();
+      try {
+        expect(() => hidDarwinSetOpenExclusive(false), returnsNormally);
+      } finally {
+        hidExit();
+      }
+    });
+
+    test('hidDarwinSetOpenExclusive round-trips value', () {
+      hidInit();
+      try {
+        hidDarwinSetOpenExclusive(false);
+        expect(hidDarwinGetOpenExclusive(), isFalse);
+        hidDarwinSetOpenExclusive(true);
+        expect(hidDarwinGetOpenExclusive(), isTrue);
+      } finally {
+        hidExit();
+      }
+    });
+
+    test('hidDarwinGetOpenExclusive defaults to true after init', () {
+      hidInit();
+      try {
+        // Per upstream docs, hid_init sets exclusive mode to true.
+        expect(hidDarwinGetOpenExclusive(), isTrue);
+      } finally {
+        hidExit();
+      }
+    });
+  });
 }
