@@ -37,6 +37,9 @@ void main(List<String> args) async {
         if (targetOS == OS.linux) '$sourcePath/linux/hid.c',
       ],
       includes: ['$sourcePath/hidapi'],
+      // native_toolchain_c only passes -framework flags when
+      // language is set to objectiveC — plain C silently drops them.
+      language: targetOS == OS.macOS ? Language.objectiveC : Language.c,
       frameworks: [
         if (targetOS == OS.macOS) 'IOKit',
         if (targetOS == OS.macOS) 'CoreFoundation',

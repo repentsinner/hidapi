@@ -78,10 +78,10 @@ void main() {
       }
     });
 
-    test('hidOpen throws HidException for invalid VID/PID', () {
+    test('hidOpen with VID/PID 0xFFFF/0xFFFF throws HidException', () {
       hidInit();
       try {
-        expect(() => hidOpen(0, 0), throwsA(isA<HidException>()));
+        expect(() => hidOpen(0xFFFF, 0xFFFF), throwsA(isA<HidException>()));
       } finally {
         hidExit();
       }
