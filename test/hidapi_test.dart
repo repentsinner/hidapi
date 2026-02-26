@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io' show Platform;
 
 import 'package:ffi/ffi.dart';
 import 'package:hidapi/hidapi.dart';
@@ -108,26 +109,34 @@ void main() {
       }
     });
 
-    test('hidDarwinSetOpenExclusive round-trips value', () {
-      hidInit();
-      try {
-        hidDarwinSetOpenExclusive(false);
-        expect(hidDarwinGetOpenExclusive(), isFalse);
-        hidDarwinSetOpenExclusive(true);
-        expect(hidDarwinGetOpenExclusive(), isTrue);
-      } finally {
-        hidExit();
-      }
-    });
+    test(
+      'hidDarwinSetOpenExclusive round-trips value',
+      () {
+        hidInit();
+        try {
+          hidDarwinSetOpenExclusive(false);
+          expect(hidDarwinGetOpenExclusive(), isFalse);
+          hidDarwinSetOpenExclusive(true);
+          expect(hidDarwinGetOpenExclusive(), isTrue);
+        } finally {
+          hidExit();
+        }
+      },
+      skip: !Platform.isMacOS ? 'macOS-only' : null,
+    );
 
-    test('hidDarwinGetOpenExclusive defaults to true after init', () {
-      hidInit();
-      try {
-        // Per upstream docs, hid_init sets exclusive mode to true.
-        expect(hidDarwinGetOpenExclusive(), isTrue);
-      } finally {
-        hidExit();
-      }
-    });
+    test(
+      'hidDarwinGetOpenExclusive defaults to true after init',
+      () {
+        hidInit();
+        try {
+          // Per upstream docs, hid_init sets exclusive mode to true.
+          expect(hidDarwinGetOpenExclusive(), isTrue);
+        } finally {
+          hidExit();
+        }
+      },
+      skip: !Platform.isMacOS ? 'macOS-only' : null,
+    );
   });
 }
