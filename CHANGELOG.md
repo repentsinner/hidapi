@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.3...hidapi-v0.1.4) (2026-02-26)
+
+
+### Bug Fixes
+
+* enable macOS framework linking by setting ObjC language mode ([c82881b](https://github.com/repentsinner/hidapi/commit/c82881b6094f2b00a797f14e2cc44aa711c6a15b))
+* enable macOS framework linking by setting ObjC language mode ([#23](https://github.com/repentsinner/hidapi/issues/23)) ([1a708ec](https://github.com/repentsinner/hidapi/commit/1a708ec92dadddb82f3833f073723b89924d77d7))
+
 ## [0.1.3](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.2...hidapi-v0.1.3) (2026-02-24)
 
 
