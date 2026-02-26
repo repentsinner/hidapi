@@ -202,3 +202,11 @@ external Pointer<hid_api_version> hid_version();
 
 @Native<Pointer<Char> Function()>()
 external Pointer<Char> hid_version_str();
+
+// --- macOS-only (hidapi_darwin.h) ---
+
+@Native<Void Function(Int32)>()
+external void hid_darwin_set_open_exclusive(int openExclusive);
+
+@Native<Int32 Function()>()
+external int hid_darwin_get_open_exclusive();
