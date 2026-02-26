@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.4...hidapi-v0.1.5) (2026-02-26)
+
+
+### Features
+
+* expose macOS exclusive device open mode ([#24](https://github.com/repentsinner/hidapi/issues/24)) ([7bd7d25](https://github.com/repentsinner/hidapi/commit/7bd7d25853751071c3b77d075ffa0946d639b287))
+
 ## [0.1.4](https://github.com/repentsinner/hidapi/compare/hidapi-v0.1.3...hidapi-v0.1.4) (2026-02-26)
 
 
