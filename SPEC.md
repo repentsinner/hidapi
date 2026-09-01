@@ -1,13 +1,17 @@
 # Spec: hidapi Dart bindings
 
-## Problem
+## Problem §spec:problem
+
+*Status: complete*
 
 No Dart package provides complete, cross-platform access to USB and
 Bluetooth HID devices. Developers resort to platform channels (Flutter
 only) or incomplete FFI wrappers that require prebuilt binaries or
 system-installed libraries.
 
-## Scope
+## Scope §spec:scope
+
+*Status: complete*
 
 This package wraps the upstream [hidapi](https://github.com/libusb/hidapi)
 C library. It shall expose every public function, struct, and enum from
@@ -20,9 +24,11 @@ consuming packages.
 
 ---
 
-## 1. API surface
+## API surface §spec:api-surface
 
-*Status: complete — PR #1, #4, 2026-02-22*
+*Status: complete*
+
+Delivered in PR #1, #4, 2026-02-22.
 
 The package shall expose an idiomatic Dart API that maps 1:1 to every
 public function, struct, and enum in upstream `hidapi/hidapi.h`.
@@ -43,9 +49,11 @@ Deviations from the C API:
 
 ---
 
-## 2. Platform support
+## Platform support §spec:platform-support
 
-*Status: complete — PR #1, 2026-02-22*
+*Status: complete*
+
+Delivered in PR #1, 2026-02-22.
 
 The package shall support every platform supported by upstream hidapi.
 The build hook shall select the correct backend source file, frameworks,
@@ -53,9 +61,11 @@ and link libraries as defined by the upstream build system.
 
 ---
 
-## 3. Native source acquisition
+## Native source acquisition §spec:native-source-acquisition
 
-*Status: complete — PR #2, 2026-02-22*
+*Status: complete*
+
+Delivered in PR #2, 2026-02-22.
 
 Git submodules are not viable: `dart pub get` does not recursively init
 submodules, so consumers that depend on this package via pub.dev or a git
@@ -74,9 +84,11 @@ Instead, the package acquires native source via a Dart 3.10 build hook
 
 ---
 
-## 4. Testing
+## Testing §spec:testing
 
-*Status: complete — PR #1, #7, 2026-02-22*
+*Status: complete*
+
+Delivered in PR #1, #7, 2026-02-22.
 
 HID devices require physical hardware. CI runners have none, so the test
 strategy splits into two tiers:
@@ -89,9 +101,11 @@ strategy splits into two tiers:
 
 ---
 
-## 5. CI/CD
+## CI/CD §spec:ci-cd
 
-*Status: complete — PR #1, #5, #7, #8, #9, #11, 2026-02-22*
+*Status: complete*
+
+Delivered in PR #1, #5, #7, #8, #9, #11, 2026-02-22.
 
 This is a single-maintainer project. Releases should not require manual
 steps beyond merging a PR. pub.dev requires semver; conventional commits
@@ -109,7 +123,7 @@ let release-please derive the correct version bump automatically.
 
 ---
 
-## 6. macOS exclusive device access
+## macOS exclusive device access §spec:macos-exclusive-device-access
 
 *Status: in progress*
 
@@ -138,7 +152,7 @@ imports.
 
 ---
 
-## 7. Publishing
+## Publishing §spec:publishing
 
 *Status: not started*
 
