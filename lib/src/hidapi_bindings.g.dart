@@ -20,6 +20,9 @@ final class hid_bus_type {
 /// Opaque hid_device handle (never dereferenced from Dart).
 final class hid_device extends Opaque {}
 
+/// Opaque hid_device_monitor handle (never dereferenced from Dart).
+final class hid_device_monitor extends Opaque {}
+
 /// hidapi version info.
 final class hid_api_version extends Struct {
   @Int32()

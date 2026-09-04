@@ -4,11 +4,10 @@
 /// C library, compiled from vendored source at build time.
 library;
 
+import 'dart:async';
 import 'dart:ffi';
 import 'dart:typed_data';
-
 import 'package:ffi/ffi.dart';
-
 import 'src/hidapi_bindings.g.dart' as ffi;
 
 /// Exception thrown when a hidapi operation fails.
@@ -18,6 +17,32 @@ class HidException implements Exception {
 
   @override
   String toString() => 'HidException: $message';
+}
+
+/// Type of device event.
+enum HidDeviceEventType {
+  /// Device was connected (added).
+  added,
+
+  /// Device was disconnected (removed).
+  removed;
+}
+
+/// A device connection/disconnection event.
+class HidDeviceEvent {
+  const HidDeviceEvent({
+    required this.type,
+    required this.deviceInfo,
+  });
+
+  /// The type of event (added or removed).
+  final HidDeviceEventType type;
+
+  /// Information about the device that was added or removed.
+  final HidDeviceInfo deviceInfo;
+
+  @override
+  String toString() => 'HidDeviceEvent($type, $deviceInfo)';
 }
 
 /// Bus type for a HID device.
@@ -455,4 +480,183 @@ String _wcharToString(Pointer<WChar> ptr) {
     buf.writeCharCode(p[i]);
   }
   return buf.toString();
+}
+
+/// Callback type for device change events.
+///
+/// Called when a device is added or removed.
+typedef HidDeviceChangeCallback = void Function(
+    HidDeviceEventType eventType, HidDeviceInfo deviceInfo);
+
+/// Monitor for HID device connection and disconnection events.
+///
+/// Uses polling-based approach to detect device changes.
+/// Native device monitoring API is not yet available in official hidapi.
+class HidDeviceMonitor {
+  /// Create a new device monitor.
+  ///
+  /// [vendorId] and [productId] can be used to filter monitored devices.
+  /// Use 0 to match all vendors or products.
+  /// [pollInterval] - polling interval for checking device changes.
+  HidDeviceMonitor({
+    this.vendorId = 0,
+    this.productId = 0,
+    this.pollInterval = const Duration(seconds: 2),
+  });
+
+  /// Filter: only monitor devices with this vendor ID.
+  /// 0 means match all vendors.
+  final int vendorId;
+
+  /// Filter: only monitor devices with this product ID.
+  /// 0 means match all products.
+  final int productId;
+
+  /// Polling interval for checking device changes.
+  final Duration pollInterval;
+
+  bool _isMonitoring = false;
+  Timer? _pollTimer;
+  final _controller = StreamController<HidDeviceEvent>.broadcast();
+  List<HidDeviceInfo> _lastDevices = [];
+
+  /// Stream of device connection/disconnection events.
+  ///
+  /// Listen to this to receive events when devices are added or removed.
+  Stream<HidDeviceEvent> get events => _controller.stream;
+
+  /// Whether the monitor is currently active.
+  bool get isMonitoring => _isMonitoring;
+
+  /// Check if the monitor has been created successfully.
+  bool get isCreated => true;
+
+  /// Start monitoring for device changes.
+  ///
+  /// Throws [StateError] if already monitoring.
+  void start() {
+    if (_isMonitoring) {
+      throw StateError('Monitor is already started');
+    }
+
+    _isMonitoring = true;
+
+    // Do initial enumeration to establish baseline
+    _lastDevices = hidEnumerate(vendorId: vendorId, productId: productId);
+
+    // Start polling timer
+    _pollTimer = Timer.periodic(pollInterval, (_) {
+      _checkForChanges();
+    });
+  }
+
+  /// Stop monitoring for device changes.
+  void stop() {
+    if (!_isMonitoring) return;
+
+    _pollTimer?.cancel();
+    _pollTimer = null;
+    _isMonitoring = false;
+    _lastDevices.clear();
+  }
+
+  /// Dispose the device monitor and release resources.
+  void dispose() {
+    stop();
+    _controller.close();
+  }
+
+  /// Check for changes after native notification.
+  void _checkForChanges() {
+    if (!_isMonitoring) return;
+
+    final currentDevices = hidEnumerate(vendorId: vendorId, productId: productId);
+
+    // Find added devices (in current but not in last)
+    final added = currentDevices.where((current) {
+      return !_lastDevices.any((last) => _deviceEquals(last, current));
+    });
+
+    // Find removed devices (in last but not in current)
+    final removed = _lastDevices.where((last) {
+      return !currentDevices.any((current) => _deviceEquals(last, current));
+    });
+
+    // Send events
+    for (final device in added) {
+      _controller.add(HidDeviceEvent(
+        type: HidDeviceEventType.added,
+        deviceInfo: device,
+      ));
+    }
+    for (final device in removed) {
+      _controller.add(HidDeviceEvent(
+        type: HidDeviceEventType.removed,
+        deviceInfo: device,
+      ));
+    }
+
+    // Update last devices list
+    _lastDevices = List.unmodifiable(currentDevices);
+  }
+
+  /// Compare two devices for equality based on their unique identifiers.
+  bool _deviceEquals(HidDeviceInfo a, HidDeviceInfo b) {
+    // Use path as primary identifier since it's unique per device
+    if (a.path.isNotEmpty && b.path.isNotEmpty) {
+      return a.path == b.path;
+    }
+    // Fall back to comparing vid/pid/serial if paths are not available
+    if (a.serialNumber.isNotEmpty && b.serialNumber.isNotEmpty) {
+      return a.vendorId == b.vendorId &&
+             a.productId == b.productId &&
+             a.serialNumber == b.serialNumber;
+    }
+    // Last resort: vid/pid is better than nothing
+    return a.vendorId == b.vendorId && a.productId == b.productId;
+  }
+}
+
+/// A global device monitor that can be used to listen to all device events.
+///
+/// Convenience wrapper around [HidDeviceMonitor] for simple use cases.
+/// Uses polling-based approach to detect device changes.
+final class HidDeviceEvents {
+  HidDeviceEvents._();
+
+  static HidDeviceMonitor? _instance;
+
+  /// Get the global event stream for device connection/disconnection events.
+  ///
+  /// The monitor is started automatically when this is first accessed.
+  static Stream<HidDeviceEvent> get events {
+    _instance ??= HidDeviceMonitor()..start();
+    return _instance!.events;
+  }
+
+  /// Start the global device monitor with custom configuration.
+  ///
+  /// Does nothing if already started.
+  static void start({
+    int vendorId = 0,
+    int productId = 0,
+  }) {
+    if (_instance != null) {
+      return;
+    }
+    _instance = HidDeviceMonitor(
+      vendorId: vendorId,
+      productId: productId,
+    )..start();
+  }
+
+  /// Stop the global device monitor.
+  static void stop() {
+    _instance?.stop();
+    _instance?.dispose();
+    _instance = null;
+  }
+
+  /// Whether the global device monitor is currently active.
+  static bool get isActive => _instance?.isMonitoring ?? false;
 }
