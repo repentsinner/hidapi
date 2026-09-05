@@ -16,12 +16,12 @@ environment:
   sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
-  code_assets: ^1.0.0
-  hooks: ^2.0.0
-  native_toolchain_c: ^0.19.0
-  ffi: ^2.1.0
-  crypto: ^3.0.0
-  archive: ^4.0.0
+  code_assets: ^2.0.0
+  hooks: ^2.2.0
+  native_toolchain_c: ^0.19.4
+  ffi: ^2.2.0
+  crypto: ^3.0.7
+  archive: ^4.2.0
 
 dev_dependencies:
   ffigen: any
