@@ -66,6 +66,26 @@ void main() {
     hidExit();
   }
 }
+
+import 'package:hidapi/hidapi.dart';
+
+void main() {
+  hidInit();
+
+  // Start global monitoring for all devices
+  HidDeviceEvents.start();
+
+  HidDeviceEvents.events.listen((event) {
+    if (event.type == HidDeviceEventType.added) {
+      print('device connect: ${event.deviceInfo}');
+    } else {
+      print('device disconnected: ${event.deviceInfo}');
+    }
+  });
+}
+
+
+
 ```
 
 ## API

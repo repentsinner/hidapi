@@ -6,11 +6,13 @@ import 'package:crypto/crypto.dart';
 import 'package:hooks/hooks.dart';
 import 'package:native_toolchain_c/native_toolchain_c.dart';
 
-const _version = 'hidapi-0.15.0';
+/// Use master branch to get the latest device monitoring API
+/// that has not been released in a stable tag yet.
+const _version = 'master';
 const _tarballUrl =
-    'https://github.com/libusb/hidapi/archive/refs/tags/$_version.tar.gz';
-const _expectedSha256 =
-    '5d84dec684c27b97b921d2f3b73218cb773cf4ea915caee317ac8fc73cef8136';
+    'https://github.com/libusb/hidapi/archive/refs/heads/$_version.tar.gz';
+// SHA-256 will vary since master changes, we skip hash check
+const String? _expectedSha256 = null;
 
 /// Directory name inside the tarball (GitHub's archive prefix).
 const _extractedDir = 'hidapi-$_version';
@@ -86,6 +88,10 @@ Future<void> _download(File destination) async {
 
 /// Verify the SHA-256 hash of the downloaded tarball.
 void _verifyHash(File tarball) {
+  if (_expectedSha256 == null) {
+    // Skip hash verification when using master branch
+    return;
+  }
   final bytes = tarball.readAsBytesSync();
   final digest = sha256.convert(bytes);
   if (digest.toString() != _expectedSha256) {

@@ -33,6 +33,15 @@ functions:
     - hid_get_device_info
     - hid_version
     - hid_version_str
+    - hid_new_device_monitor
+    - hid_free_device_monitor
+    - hid_device_monitor_start
+    - hid_device_monitor_stop
+    - hid_device_monitor_lock
+    - hid_device_monitor_unlock
+    - hid_device_monitor_wait
+    - hid_darwin_set_open_exclusive
+    - hid_darwin_get_open_exclusive
 structs:
   include:
     - hid_device_info
